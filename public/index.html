@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <nav class="sec1">
+      <ul class="ul" id="navbar">
+        <li class="li"><a href="/?q=all&p=1">Home</a></li>
+        <li class="li"><a href="/?q=Weather&p=1">Weather</a></li>
+        <li class="li"><a href="/?q=Business&p=1">Business</a></li>
+        <li class="li"><a href="/?q=International&p=1">International</a></li>
+        <li class="li"><a href="/?q=Crime&p=1">Crime</a></li>
+        <li class="li"><a href="/?q=Entertainment&p=1">Entertainment</a></li>
+        <li class="li"><a href="/?q=Sports&p=1">Sports</a></li>
+        <li class="li"><a href="/?q=Political&p=1">Political</a></li>
+        <li class="li"><a href="/?q=StockMarket&p=1">Stock Market</a></li>
+
+        <form action="" class="form" method="get">
+          <input class="input" type="text" name="search" placeholder="Search" />
+          <input type="hidden" name="name" value="1" />
+          <button class="btn" type="submit">Search</button>
+        </form>
+      </ul>
+    </nav>
+
+    <section class="sec2 section">
+      <div class="title">
+        <h1 class="h1">
+          <span id="headline"></span>
+          <span> - World News Express ( </span>
+          <span id="result"></span> Resulted )
+        </h1>
+      </div>
+      <div class="items" id="content">
+        <h2
+          style="
+            text-align: center !important;
+
+            position: absolute;
+            left: 39%;
+            font-size: 2rem;
+            color: white;
+          "
+        >
+          ....Loading Please Wait
+        </h2>
+      </div>
+      <div class="pn" style="margin-top: 7rem">
+        <ul class="ul">
+          <li class="li"><a id="pre" href="">Previous</a></li>
+
+          <li class="li"><a id="next" href="">Next</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer"></div>
+    </footer>
+    <script>
+      let articlesPerPage;
+      let totalPages;
+
+      try {
+        var query = window.location.search
+          .split("?")[1]
+          .split("=")[1]
+          .split("&")[0];
+        if (query == "") {
+          query = "all";
+        }
+
+        var pageNo = parseInt(
+          window.location.search.split("?")[1].split("&")[1].split("=")[1]
+        );
+        if (pageNo == 0) {
+          pageNo = 1;
+        }
+      } catch {
+        console.log("you are at home page");
+        var query = "all";
+        var pageNo = 1;
+      }
+
+      console.log(pageNo);
+      let str = "";
+      // // console.log(query ,pageNo)
+      const fetchNews = async (query, pageNo) => {
+        let a = await fetch(
+          `/api?q=${query}&apiKey=9a9d8799d8c24a99978e01a92fcd9d34&pageSize=12&page=${pageNo}`
+        );
+        let r = await a.json();
+        console.log(r);
+        // totalPages = Math.ceil(r.totalResults / articlesPerPage);
+        pre.href = `/?q=${query}&pageno=${pageNo - 1}`;
+        next.href = `/?q=${query}&pageno=${pageNo + 1}`;
+        headline.innerHTML = query;
+        result.innerHTML = r.totalResults;
+        for (let item of r.articles) {
+          str += `<div class="item">
+         
+          <img class="img" src="${item.urlToImage}" alt="" />
+          <h3 class="title">${item.title}</h5>
+          <p class="p">
+            ${item.description}
+          </p>
+          <button class="btn"><a href="${item.url}">Read more</a></button>
+        </div>`;
+        }
+        content.innerHTML = str;
+      };
+
+      fetchNews(query, pageNo);
+      document.addEventListener("scroll", () => {
+        var scroll_position = window.scrollY;
+        if (scroll_position > 250) {
+          navbar.style.backgroundColor = "#29323c";
+        } else {
+          navbar.style.backgroundColor = "transparent";
+        }
+      });
+    </script>
+  </body>
+</html>
